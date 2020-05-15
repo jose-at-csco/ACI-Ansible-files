@@ -1,0 +1,82 @@
+---
+- hosts: aci
+  connection: local
+  vars:
+    aci_login: &aci_login
+      hostname: "10.122.80.156"
+      username: "admin"
+      password: "C1sco123"
+      use_proxy: no
+      use_ssl: yes
+      validate_certs: no
+  tasks:
+  - name: Add a tenant using aci_tenant
+    aci_tenant:
+      <<: *aci_login
+      tenant: "Cyber-Ansible-Tenant"
+      description: "Ansible created Tenant"
+      state: present
+
+  - name: Create BD
+    aci_bd:
+      <<: *aci_login
+      tenant: "Cyber-Ansible-Tenant"
+      bd: "Cyber-Ansible-BD"
+      vrf: "Cyber-common-vrf"
+      arp_flooding: True
+      l2_unknown_unicast: proxy
+      l3_unknown_multicast: flood
+      multi_dest: bd-flood
+
+  - name: Create ACI tenant BD subnet
+    aci_bd_subnet:
+      <<: *aci_login
+      tenant: "Cyber-Ansible-Tenant"
+      bd: "Cyber-Ansible-BD"
+      gateway: "192.168.140.254"
+      mask: 24
+
+  - name: Create ACI tenant AP profile
+    aci_ap:
+      <<: *aci_login
+      ap: "Cyber-Ansible-AP"
+      tenant: "Cyber-Ansible-Tenant"
+
+  - name: Create ACI tenant AP profile EPG
+    aci_epg:
+      <<: *aci_login
+      epg: "Cyber-Ansible-EPG"
+      ap: "Cyber-Ansible-AP"
+      tenant: "Cyber-Ansible-Tenant"
+      bd: "Cyber-Ansible-BD"
+
+  - name: Add consumer contract to EPG
+    aci_epg_to_contract:
+      <<: *aci_login
+      tenant: "Cyber-Ansible-Tenant"
+      ap: "Cyber-Ansible-AP"
+      epg: "Cyber-Ansible-EPG"
+      contract: "TEst"
+      contract_type: consumer
+
+  - name: Add provider contract to EPG
+    aci_epg_to_contract:
+      <<: *aci_login
+      tenant: "Cyber-Ansible-Tenant"
+      ap: "Cyber-Ansible-AP"
+      epg: "Cyber-Ansible-EPG"
+      contract: "TEst"
+      contract_type: provider
+
+  - name: Bind EPG to Domain
+    aci_epg_to_domain:
+      <<: *aci_login
+      tenant: "Cyber-Ansible-Tenant"
+      ap: "Cyber-Ansible-AP"
+      epg: "Cyber-Ansible-EPG"
+      domain: "Fedlab-ACI-Domain"
+      domain_type: vmm
+      vm_provider: vmware
+      encap: 2003
+      deploy_immediacy: immediate
+      resolution_immediacy: immediate

@@ -1,0 +1,38 @@
+
+---
+- hosts: aci
+  connection: local
+  vars:
+    aci_login: &aci_login
+      hostname: "10.122.80.156"
+      username: "admin"
+      password: "C1sco123"
+      use_proxy: no
+      use_ssl: yes
+      validate_certs: no
+  tasks:
+  - name: Create ACI contract
+    aci_contract:
+      <<: *aci_login
+      tenant: common
+      contract: ansibleContract
+      description: "Ansible create contract"
+      scope: global
+
+  - name: Bind a Subject to a Contract
+    aci_contract_subject:
+      <<: *aci_login
+      tenant: common
+      contract: ansibleContract
+      subject: ansibleSubject
+      reverse_filter: yes
+      state: present
+
+  - name: Bind a Subject to a Contract
+    aci_contract_subject_to_filter:
+      <<: *aci_login
+      tenant: common
+      contract: ansibleContract
+      subject: ansibleSubject
+      filter: default
+      state: present

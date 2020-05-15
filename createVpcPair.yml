@@ -1,0 +1,20 @@
+---
+- hosts: aci
+  connection: local
+  vars:
+  tasks:
+  - name: Register fabric nodes
+    aci_rest:
+      hostname: '{{ inventory_hostname }}'
+      username: '{{ aci_username }}'
+      password: '{{ aci_password }}'
+      validate_certs: no
+      use_ssl: yes
+      use_proxy: no
+      path: /api/node/mo/uni/fabric/protpol/expgep-{{item.name}}.json
+      method: post
+      content: 
+        {"fabricExplicitGEp":{"attributes":{"dn":"uni/fabric/protpol/expgep-{{item.name}}","name":"{{item.name}}","id":"{{item.id}}","rn":"expgep-{{item.name}}","status":"created"},"children":[{"fabricNodePEp":{"attributes":{"dn":"uni/fabric/protpol/expgep-{{item.name}}/nodepep-{{item.leafA}}","id":"{{item.leafA}}","status":"created","rn":"nodepep-{{item.leafA}}"},"children":[]}},{"fabricNodePEp":{"attributes":{"dn":"uni/fabric/protpol/expgep-{{item.name}}/nodepep-{{item.leafB}}","id":"{{item.leafB}}","status":"created","rn":"nodepep-{{item.leafB}}"},"children":[]}}]}} 
+    with_items:
+      - { id: "1", name: "101-102", leafA: "101", leafB: "102" }
+    delegate_to: localhost

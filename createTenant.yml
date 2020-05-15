@@ -1,0 +1,57 @@
+---
+- hosts: 10.122.80.156
+  connection: local
+  vars:
+    aci_login: &aci_login
+      hostname: "10.122.80.156"
+      username: "admin"
+      password: "C1sco123"
+      use_proxy: no
+      use_ssl: yes
+      validate_certs: no
+  tasks:
+  - name: Add a tenant using aci_tenant
+    aci_tenant:
+      <<: *aci_login
+      tenant: "Cyber-Ansible-Tenant"
+      description: Cyber
+      state: present
+
+#  - name: CREATE ACI TENANT VRF
+#    aci_vrf:
+#      <<: *aci_login
+#      vrf: 'MyVRF'
+#      tenant: 'AnsibleDemo'
+
+  - name: Create BD
+    aci_bd:
+      <<: *aci_login
+      tenant: "Cyber-Ansible-Tenant"
+      bd: "Cyber-Ansible-BD"
+      vrf: 'MyVRF'
+      arp_flooding: True
+      l2_unknown_unicast: proxy
+      l3_unknown_multicast: flood
+      multi_dest: bd-flood
+
+  - name: CREATE ACI TENANT BD SUBNET
+    aci_bd_subnet:
+      <<: *aci_login
+      tenant: "Cyber-Ansible-Tenant"
+      bd: "Cyber-Ansible-BD"
+      gateway: "192.168.140.254"
+      mask: 24
+
+  - name: CREATE ACI TENANT APP PROFILE
+    aci_ap:
+      <<: *aci_login
+      ap: "Cyber-Ansible-AP"
+      tenant: "Cyber-Ansible-Tenant"
+
+  - name: CREATE ACI TENANT APP PROFILE EPG
+    aci_epg:
+      <<: *aci_login
+      epg: "Cyber-Ansible-EPG"
+      ap: "Cyber-Ansible-AP"
+      tenant: "Cyber-Ansible-Tenant"
+      bd: "Cyber-Ansible-BD"

@@ -1,0 +1,32 @@
+---
+- hosts: aci
+  connection: local
+  vars:
+    aci_login: &aci_login
+      hostname: '{{ inventory_hostname }}'
+      username: '{{ aci_username }}'
+      password: '{{ aci_password }}'
+      validate_certs: no
+      use_proxy: no
+      use_ssl: yes
+  tasks:
+  - name: create VLAN pools
+    aci_rest:
+      <<: *aci_login
+      path: /api/mo/uni.xml
+      method: post
+      content:
+          <polUni>
+            <infraInfra>
+              <fvnsVlanInstP name="{{item.name}}" descr="{{item.desc}}" allocMode="{{item.alloc}}">
+                <fvnsEncapBlk name="{{item.name}}" descr="" allocMode="inherit" from="vlan-{{item.from}}" to="vlan-{{item.to}}"/>
+              </fvnsVlanInstP>
+            </infraInfra>
+          </polUni>
+    with_items:
+      - { name: "foo1", desc: "ansible 1", alloc: "static", from: "2000", to: "2010" }
+      - { name: "foo2", desc: "ansible 2", alloc: "static", from: "2011", to: "2030" }
+      - { name: "foo3", desc: "ansible 3", alloc: "static", from: "2031", to: "2100" }
+      - { name: "foo4", desc: "ansible 4", alloc: "static", from: "2101", to: "2255" }
+      - { name: "foo5", desc: "ansible 5", alloc: "static", from: "2256", to: "2355" }
+    delegate_to: localhost
