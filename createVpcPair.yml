@@ -2,6 +2,14 @@
 - hosts: aci
   connection: local
   vars:
+    aci_login: &aci_login
+      hostname: "{{ inventory_hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}" 
+      use_proxy: no
+      use_ssl: yes
+      validate_certs: no
+
   tasks:
   - name: Register fabric nodes
     aci_rest:
