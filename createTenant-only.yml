@@ -1,0 +1,6 @@
+---
+- name: New Tenant
+  hosts: apic
+  connection: local
+  gather_facts: False
+  
