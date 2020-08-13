@@ -1,6 +1,22 @@
 ---
-- name: New Tenant
+- name: Tenant only example
   hosts: apic
   connection: local
   gather_facts: False
+
+  tasks:
+    - name: Add a tenant using aci_tenant
+      aci_tenant:
+        host: "{{ inventory_hostname }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+        use_proxy: no
+        use_ssl: yes
+        validate_certs: no
+        tenant: Ansible-Tenant
+        description: Ansible Created
+        state: present
+
+        
+      
   
