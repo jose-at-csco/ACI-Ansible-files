@@ -65,7 +65,7 @@
       tenant: "Ansible-Complete-Tenant"
       ap: "Ansible-AP"
       epg: "Ansible-EPG"
-      domain: "VMware/aci-vds"
+      domain: "aci-vds"
       domain_type: vmm
       vm_provider: vmware
       state: present
