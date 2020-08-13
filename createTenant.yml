@@ -1,6 +1,7 @@
 ---
-- hosts: 10.122.80.156
+- hosts: apic
   connection: local
+  gather_facts: False
   vars:
     aci_login: &aci_login
       hostname: "10.122.80.156"
@@ -13,8 +14,8 @@
   - name: Add a tenant using aci_tenant
     aci_tenant:
       <<: *aci_login
-      tenant: "Cyber-Ansible-Tenant"
-      description: Cyber
+      tenant: "Ansible-Tenant"
+      description: Ansible Created
       state: present
 
 #  - name: CREATE ACI TENANT VRF
