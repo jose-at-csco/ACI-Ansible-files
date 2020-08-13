@@ -67,4 +67,5 @@
       epg: "Ansible-EPG"
       domain: "VMware/aci-vds"
       domain_type: vmm
+      vm_provider: vmware
       state: present
